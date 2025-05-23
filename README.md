@@ -1,99 +1,194 @@
-# push_swap
+# Push Swap
 
-## Introduction
-**Push_swap** is a program designed to sort a stack of integers using a limited set of predefined operations. This project emphasizes efficiency and optimization, leveraging the **Radix Sort Algorithm** to handle stacks of varying sizes.
+A sorting algorithm that implements efficient stack-based sorting using a limited set of operations.
 
-## Goals
-1. Implement and optimize a sorting algorithm for a stack using the **Radix Algorithm**.
-2. Use only specific operations:
-   - `sa`, `sb`, `ss` (swap)
-   - `pa`, `pb` (push)
-   - `ra`, `rb`, `rr` (rotate)
-   - `rra`, `rrb`, `rrr` (reverse rotate)
-3. Minimize the total number of operations.
-4. Ensure robust performance for stacks containing 2 to 500 elements.
+## Table of Contents
+- [Description](#description)
+- [Features](#features)
+- [Compilation](#compilation)
+- [Usage](#usage)
+- [Operations](#operations)
+- [Algorithm](#algorithm)
+- [Project Structure](#project-structure)
+- [Examples](#examples)
+- [Performance](#performance)
 
-## How It Works
-Push_swap operates on two stacks, **A** and **B**, using predefined operations to sort the integers in ascending order. Stack A begins unsorted, and the final result must have all integers in ascending order in Stack A, with Stack B empty.
-This implementation uses the **Radix Algorithm**, which is particularly efficient for sorting integers based on their binary representation.
+## Description
 
-## Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your_username/push_swap.git push_swap
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd push_swap
-   ```
-3. Compile the program:
-   ```bash
-   make
-   ```
+Push_swap is a project that challenges you to sort a stack of integers using the most efficient combination of predefined operations. The goal is to sort stack A in ascending order using the minimum number of moves.
+
+The program takes a list of integers as arguments and outputs the sequence of operations needed to sort them.
+
+## Features
+
+- **Efficient Sorting**: Multiple algorithms optimized for different input sizes
+- **Error Handling**: Comprehensive validation for invalid inputs
+- **Memory Management**: Proper allocation and deallocation of resources
+- **Optimized Operations**: Smart rotation decisions to minimize move count
+
+## Compilation
+
+```bash
+make
+```
+
+This will compile the program and create the `push_swap` executable.
+
+### Available Make Targets
+- `make` or `make all` - Compile the program
+- `make clean` - Remove object files
+- `make fclean` - Remove object files and executable
+- `make re` - Recompile everything
 
 ## Usage
-Run the program with a list of integers as arguments:
 
 ```bash
-./push_swap 3 2 5 1 4
+./push_swap [list of integers]
 ```
 
-The program outputs the operations needed to sort the numbers:
+### Examples
+```bash
+# Sort three numbers
+./push_swap 3 1 2
+# Output: sa
+
+# Sort with quoted arguments
+./push_swap "3 1 2 4"
+# Output: sa
+
+# Sort larger sets
+./push_swap 5 2 8 1 9 3 7 4 6
+```
+
+### Input Validation
+The program will output "Error" and exit if:
+- Non-integer arguments are provided
+- Duplicate numbers are found
+- Numbers exceed INT_MAX
+- No arguments are provided
+
+## Operations
+
+The program uses the following operations to sort the stacks:
+
+| Operation | Description |
+|-----------|-------------|
+| `sa` | Swap the first 2 elements at the top of stack A |
+| `sb` | Swap the first 2 elements at the top of stack B |
+| `ss` | `sa` and `sb` at the same time |
+| `pa` | Push the first element of stack B to stack A |
+| `pb` | Push the first element of stack A to stack B |
+| `ra` | Rotate stack A (first element becomes last) |
+| `rb` | Rotate stack B (first element becomes last) |
+| `rr` | `ra` and `rb` at the same time |
+| `rra` | Reverse rotate stack A (last element becomes first) |
+| `rrb` | Reverse rotate stack B (last element becomes first) |
+| `rrr` | `rra` and `rrb` at the same time |
+
+## Algorithm
+
+The program implements different sorting strategies based on input size:
+
+### Small Sets (≤ 3 elements)
+- **2 elements**: Simple comparison and swap if needed
+- **3 elements**: Hardcoded optimal solutions for all 6 permutations
+
+### Medium Sets (4-40 elements)
+- Uses a hybrid approach that pushes the largest elements to stack B
+- Sorts the remaining 3 elements in stack A
+- Pushes elements back from B to A in sorted order
+
+### Large Sets (≥ 42 elements)
+- **Radix Sort**: Efficient bit-based sorting algorithm
+- Sorts numbers by examining each bit position
+- Optimal for large datasets with O(n×k) complexity where k is the number of bits
+
+## Project Structure
 
 ```
+push_swap/
+├── Makefile
+├── includes/
+│   └── push_swap.h           # Header file with function prototypes
+├── libft/                    # Custom C library
+│   ├── Makefile
+│   ├── includes/
+│   │   ├── libft.h
+│   │   └── ft_printf.h
+│   └── srcs/                 # Library source files
+└── srcs/
+    ├── push_swap.c           # Main program
+    ├── init.c                # Stack initialization and parsing
+    ├── errors.c              # Error handling functions
+    ├── free.c                # Memory management
+    ├── operation.c           # Basic stack operations
+    ├── push.c                # Push operations (pa, pb)
+    ├── swap.c                # Swap operations (sa, sb, ss)
+    ├── rotate.c              # Rotate operations (ra, rb)
+    ├── rrotate.c             # Reverse rotate operations (rra, rrb, rrr)
+    ├── sort.c                # Sorting algorithms for small/medium sets
+    ├── radix.c               # Radix sort implementation
+    └── utils.c               # Utility functions
+```
+
+## Examples
+
+### Sorting 3 numbers
+```bash
+$ ./push_swap 2 1 3
+sa
+```
+
+### Sorting 5 numbers
+```bash
+$ ./push_swap 5 4 3 2 1
+pb
 pb
 ra
-pb
-sa
 pa
 pa
 ```
 
-To verify correctness, use a checker program. Example:
-
+### Error cases
 ```bash
-ARG="3 2 5 1 4"; ./push_swap $ARG | ./checker_OS $ARG
+$ ./push_swap 1 2 2
+Error
+
+$ ./push_swap 1 abc 3
+Error
+
+$ ./push_swap
+# No output (no arguments)
 ```
-
-## Radix Algorithm Explanation
-The **Radix Algorithm** sorts integers by processing their binary representation bit by bit. This method works efficiently for larger stacks, typically up to 500 elements.
-
-### Steps:
-1. **Normalize Values**:
-   - Convert the input numbers into a range from 0 to `n-1` based on their relative size (e.g., smallest becomes 0, second smallest becomes 1, etc.).
-   - This avoids large integer gaps and simplifies bit-level processing.
-
-2. **Bitwise Processing**:
-   - Starting with the least significant bit (LSB), partition the numbers into Stack A and Stack B based on whether the bit is 0 or 1.
-   - Repeat this process for all bits of the largest number in binary.
-
-3. **Rebuild Stack A**:
-   - Push all elements back to Stack A in sorted order by completing all bit-level passes.
-
-### Example:
-Sorting `3 2 5 1 4`:
-- Binary representations:  
-  ```
-  3 -> 011
-  2 -> 010
-  5 -> 101
-  1 -> 001
-  4 -> 100
-  ```
-- Iterate through each bit position, pushing and rotating to organize the stack.
-- Final result is achieved after processing all bits.
 
 ## Performance
 
-The **Radix Algorithm** provides consistent performance across varying input sizes:
+The algorithm performance varies by input size:
 
-- **For 5 elements**: Typically ~12-15 operations.
-- **For 100 elements**: ~700-900 operations.
-- **For 500 elements**: ~5500-7000 operations.
+- **2-3 elements**: 0-2 operations (optimal)
+- **4-40 elements**: Typically under 12 operations for 5 elements
+- **42+ elements**: Radix sort provides consistent O(n×log n) performance
 
-## Testing
-Test the program with random integers:
+### Optimization Features
+- **Smart Rotation**: Chooses shortest path (rotate vs reverse rotate)
+- **Bit Manipulation**: Efficient radix sort implementation
+- **Memory Efficient**: Doubly-linked list implementation
+- **Input Validation**: Early error detection prevents unnecessary processing
 
-```bash
-ARG=$(shuf -i 1-500 -n 100); ./push_swap $ARG | ./checker $ARG
-```
+## Technical Details
+
+### Data Structures
+- **Doubly-linked lists** for both stacks A and B
+- **Head and tail pointers** for O(1) operations at both ends
+- **Custom stack structure** containing pointers to both stacks
+
+### Memory Management
+- All allocated memory is properly freed
+- Error conditions trigger cleanup before exit
+- No memory leaks in normal or error conditions
+
+### Error Handling
+- Comprehensive input validation
+- Duplicate detection
+- Integer overflow protection
+- Graceful error reporting
